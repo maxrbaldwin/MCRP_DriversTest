@@ -1,0 +1,11 @@
+{
+  "name": "mcrp-drivers-test",
+  "version": "1.0.0",
+  "description": "a simple drivers test for MCRP",
+  "main": "packages/driving-test-gamemode/index.js",
+  "scripts": {
+    "dev": "nodemon --watch packages --watch client_packages --exec \"./ragemp-server.exe\""
+  },
+  "author": "MxPrime",
+  "license": "ISC"
+}
