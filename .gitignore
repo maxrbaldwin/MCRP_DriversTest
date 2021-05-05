@@ -6,3 +6,5 @@ BugTrap-x64.dll
 *.dll
 *.gz
 ragemp-server.exe
+node_modules
+*/notes.txt
