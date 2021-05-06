@@ -1,10 +1,11 @@
 const { setTestInWorld } = require('./modules/setInWorld');
 const setFixtures = require('./modules/setFixtures');
-const KTurnTestScene = require('./scenes/KturnTest');
-const KTurnToParkingPath = require('./scenes/KTurnToParkingPath');
-const ParkingTest = require('./scenes/ParkingTest');
-const PParkingTest = require('./scenes/PParkingTesting');
-const ToEndPath = require('./scenes/ToEndPath');
+// const KTurnTestScene = require('./scenes/KturnTest');
+// const KTurnToParkingPath = require('./scenes/KTurnToParkingPath');
+// const ParkingTest = require('./scenes/ParkingTest');
+// const PParkingTest = require('./scenes/PParkingTesting');
+// const ToEndPath = require('./scenes/ToEndPath');
+// const TestState = require('./scenes/TestState');
 
 // world things
 mp.events.add("playerReady", player => {
@@ -13,11 +14,15 @@ mp.events.add("playerReady", player => {
   setFixtures();
 });
 
+mp.events.add('packagesLoaded', () => {
+  console.log('Loaded all resources successfully');
+});
+
 mp.events.add("playerSpawn", () => {
   console.log('player spawned');
 });
 
-// handle colshapes
+// // handle colshapes
 mp.events.add('playerEnterColshape', (player, shape) => {
   if (shape.interaction) {
     player.interaction = shape.interaction;
@@ -26,14 +31,14 @@ mp.events.add('playerEnterColshape', (player, shape) => {
   if (shape.execute) shape.execute(player);
 });
 
-mp.events.add('playerExitColshape', (player, shape) => {
-  if (player.interaction) {
-    // set noop
-    player.interaction = () => true;
-  }
+// mp.events.add('playerExitColshape', (player, shape) => {
+//   if (player.interaction) {
+//     // set noop
+//     player.interaction = () => true;
+//   }
 
-  if (shape.exit) shape.exit();
-});
+//   if (shape.exit) shape.exit();
+// });
 
 mp.events.add("playerEnterVehicle", (player, vehicle) => {
   if (vehicle.onEnterCar) vehicle.onEnterCar(player);
@@ -61,9 +66,16 @@ mp.events.addCommand('teleport-me', player => {
 mp.events.add('keypress:y', player => {
   if (player.interaction) player.interaction(player);
 });
+
 mp.events.add('vehicleDamage', () => {
   console.log('doh')
 });
+
+mp.events.add('start-driving-test', player => {
+  // const State = new TestState(car, player);
+  player.call('start-driving-test');
+})
+
 // test has started
 mp.events.add('make-kturn-test', state => {
   function handleVehicleDamage () {
@@ -80,32 +92,33 @@ mp.events.add('make-kturn-test', state => {
   });
 });
 
-mp.events.add('make-kturn-test', state => {
-  const message = "Welcome to the driver's test. Please follow the instructions. Failing any of the tests will result in a strike toward your final grade. Three strikes and you fail the test. Any damage to the car will also result in a strike."
-  state.player.call('driving-test-message', [message]);
-})
+// mp.events.add('make-kturn-test', state => {
+//   const message = "Welcome to the driver's test. Please follow the instructions. Failing any of the tests will result in a strike toward your final grade. Three strikes and you fail the test. Any damage to the car will also result in a strike."
+//   state.player.call('driving-test-message', [message]);
+// });
 
-mp.events.add('make-kturn-test', state => {
-  const scene = new KTurnTestScene(state);
-  scene.make();
-});
+// mp.events.add('make-kturn-test', state => {
+//   const scene = new KTurnTestScene(state);
+//   console.log(scene)
+//   state.player.call('make-kturn-test', [JSON.stringify(scene)])
+// });
 
-mp.events.add('make-kturn-to-parking-path', state => {
-  const scene = new KTurnToParkingPath(state);
-  scene.make();
-});
+// mp.events.add('make-kturn-to-parking-path', state => {
+//   const scene = new KTurnToParkingPath(state);
+//   scene.make();
+// });
 
-mp.events.add('make-parking-test', state => {
-  const scene = new ParkingTest(state);
-  scene.make();
-});
+// mp.events.add('make-parking-test', state => {
+//   const scene = new ParkingTest(state);
+//   scene.make();
+// });
 
-mp.events.add('make-pparking-test', state => {
-  const scene = new PParkingTest(state);
-  scene.make();
-})
+// mp.events.add('make-pparking-test', state => {
+//   const scene = new PParkingTest(state);
+//   scene.make();
+// })
 
-mp.events.add('make-path-to-end', state => {
-  const scene = new ToEndPath(state);
-  scene.make();
-});
+// mp.events.add('make-path-to-end', state => {
+//   const scene = new ToEndPath(state);
+//   scene.make();
+// });

@@ -1,4 +1,4 @@
-const Checkpoints = require('./Checkpoints');
+const Checkpoints = require('./driving-test/scenes/Checkpoints.js');
 
 class KTurnToParkingPath extends Checkpoints {
   constructor(state) {
@@ -10,7 +10,7 @@ class KTurnToParkingPath extends Checkpoints {
     kTurnToParkingPathCpOne: {
       vector: new mp.Vector3(-955.4210815429688,-2144.494384765625,8.34027099609375),
       onPlayerEnteredCheckPoint: () => {
-        this.createCheckpoint(this.state.player);
+        this.createCheckpoint();
       }
     },
     kTurnToParkingPathCpTwo: {
@@ -24,7 +24,7 @@ class KTurnToParkingPath extends Checkpoints {
   make = () => {
     const colshapeLocation = [-944.1925659179688,-2132.5068359375,8.71610164642334];
     const ghostCarLocation = [-910.6793212890625,-2198.818115234375,6.123366355895996];
-    this.createCheckpoint(this.state.player);
+    this.createCheckpoint();
     this.makeGhostCarSpawn(colshapeLocation, ghostCarLocation, 45, 40.0);
   }
   end = () => {
@@ -32,4 +32,4 @@ class KTurnToParkingPath extends Checkpoints {
   }
 }
 
-module.exports = KTurnToParkingPath;
+exports = KTurnToParkingPath;

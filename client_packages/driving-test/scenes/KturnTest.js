@@ -1,4 +1,4 @@
-const Checkpoints = require('./Checkpoints');
+const Checkpoints = require('./driving-test/scenes/Checkpoints.js');
 
 class KTurnTestScene extends Checkpoints {
   constructor(state) {
@@ -19,7 +19,9 @@ class KTurnTestScene extends Checkpoints {
     this.createCheckpoint(this.state.player);
   }
   end = () => {
-    const { z: rotation } = this.state.car.rotation
+    const car = this.state.car;
+
+    const rotation = car.getHeading();
     const threshold = rotation < -40 || rotation > 130;
     let pass = true;
 
@@ -29,9 +31,9 @@ class KTurnTestScene extends Checkpoints {
     }
 
     const message = pass ? 'You passed the K-turn test!' : 'You failed the K-Turn test!'
-    this.state.player.call('driving-test-message', [message]);
+    mp.events.call('driving-test-message', message);
     mp.events.call('make-kturn-to-parking-path', this.state);
   }
 }
 
-module.exports = KTurnTestScene;
+exports = KTurnTestScene;

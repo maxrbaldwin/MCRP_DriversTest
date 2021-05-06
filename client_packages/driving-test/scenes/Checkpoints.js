@@ -1,4 +1,8 @@
-const getRandomCarType = require("../modules/getRandomCarType");
+// const getRandomCarType = require("../modules/getRandomCarType");
+
+const noop = () => true;
+
+// const driverTestCheckpointId = 'driversTestCheckpoint';
 
 class Checkpoints {
   checkpoints = {}
@@ -15,11 +19,21 @@ class Checkpoints {
   getLast = () => this.checkpointsArray[this.checkpointsArray.length - 1]
   isLast = () => this.current === (this.checkpointsArray.length + 1);
 
-  createCheckpoint = player => {
-    const checkpoint = this.next();
+  createCheckpoint = () => {
+    const { vector, onPlayerEnteredCheckPoint } = this.next();
     const nextDestination = this.getNext() || this.connector || this.getLast();
-
-    player.call('create-checkpoint', [checkpoint, nextDestination]);
+    const { x: directionX, y: directionY, z: directionZ } = nextDestination.vector;
+    const checkpoint = mp.checkpoints.new(1, vector, 5, {
+      direction: new mp.Vector3(directionX, directionY, directionZ),
+      color: [ 255, 255, 255, 255 ],
+      visible: true,
+      dimension: 0
+    });
+  
+  
+    // checkpoint.setVariable('class', driverTestCheckpointId);
+  
+    checkpoint.onPlayerEnteredCheckPoint = onPlayerEnteredCheckPoint || noop;
   }
 
   makeGhostCarSpawn = (colShapeCoordinates, carCoordinates, heading, speed = 20.0) => {
@@ -27,22 +41,22 @@ class Checkpoints {
     const colShapeLocation = new mp.Vector3(x, y, z);
     
     const colshape = mp.colshapes.newTube(colShapeLocation.x, colShapeLocation.y, colShapeLocation.z, 5.0, 5.0);
-    colshape.execute = function spawnGhostCar(player) {
+    colshape.execute = function spawnGhostCar() {
       const carOpts = {
         numberPlate: "DNTSTLME",
         heading: heading,
       };
       const [xx, yy, zz] = carCoordinates
       const ghostCarSpawn = new mp.Vector3(xx, yy, zz);
-      const ghostCar = mp.vehicles.new(mp.joaat(getRandomCarType()), ghostCarSpawn, carOpts);
+      const ghostCar = mp.vehicles.new(mp.game.joaat('emperor2'), ghostCarSpawn, carOpts);
       const ghostCarTimeout = setTimeout(() => {
         ghostCar.destroy();
         clearTimeout(ghostCarTimeout);
       }, 5000);
       colshape.destroy();
-      player.call('start-ghost-car', [ghostCar, speed]);
+      mp.events.call('start-ghost-car', ghostCar, speed);
     }
   }
 }
 
-module.exports = Checkpoints;
+exports = Checkpoints;

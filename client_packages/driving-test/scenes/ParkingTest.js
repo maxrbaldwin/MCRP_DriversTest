@@ -1,4 +1,4 @@
-const Checkpoints = require('./Checkpoints');
+const Checkpoints = require('./driving-test/scenes/Checkpoints.js');
 
 class ParkingTest extends Checkpoints {
   constructor(state) {
@@ -10,7 +10,7 @@ class ParkingTest extends Checkpoints {
     entranceCheckpoint: {
       vector: new mp.Vector3(-877.8818969726562,-2253.07958984375,5.929435729980469),
       onPlayerEnteredCheckPoint: () => {
-        this.createCheckpoint(this.state.player);
+        this.createCheckpoint();
         this.makeTest();
       }
     },
@@ -29,7 +29,7 @@ class ParkingTest extends Checkpoints {
   }
   checkpointsArray = this.makeArray(this.checkpoints);
   make = () => {
-    this.createCheckpoint(this.state.player);
+    this.createCheckpoint();
   }
   end = () => {
     this.carOne.destroy();
@@ -38,7 +38,7 @@ class ParkingTest extends Checkpoints {
   }
   giveInstruction = () => {
     const message = "Park between the two cars. Try to park as straight as possible"
-    this.state.player.call('driving-test-message', [message]);
+    mp.events.call('driving-test-message', message);
   }
   makeTest = () => {
     const carOpts = {
@@ -47,10 +47,10 @@ class ParkingTest extends Checkpoints {
     };
     
     const carOneSpawn = new mp.Vector3(-905.263427734375,-2273.96875,6.214130878448486);
-    this.carOne = mp.vehicles.new(mp.joaat('emperor2'), carOneSpawn, carOpts);
+    this.carOne = mp.vehicles.new(mp.game.joaat('emperor2'), carOneSpawn, carOpts);
     
     const carTwoSpawn = new mp.Vector3(-908.4777221679688,-2279.995849609375,6.214382648468018);
-    this.carTwo = mp.vehicles.new(mp.joaat('emperor2'), carTwoSpawn, carOpts);
+    this.carTwo = mp.vehicles.new(mp.game.joaat('emperor2'), carTwoSpawn, carOpts);
 
     const colShapeLocation = new mp.Vector3(-906.9380493164062,-2277.127197265625,6.214624404907227);
     const colshape = mp.colshapes.newTube(colShapeLocation.x, colShapeLocation.y, colShapeLocation.z, 5.0, 5.0);
@@ -58,11 +58,11 @@ class ParkingTest extends Checkpoints {
     colshape.execute = () => {
       const text = "Flex your Y muscle when you think you are parked correctly"
       
-      this.state.player.call('driving-test-text-on-screen', [text]);
+      mp.events.call('driving-test-text-on-screen', text);
     }
 
     colshape.interaction = () => {
-      const { z: rotation } = this.state.car.rotation
+      const rotation = this.state.car.getHeading();
       const threshold = rotation < -101 && rotation > -150
       let pass = true;
 
@@ -72,7 +72,7 @@ class ParkingTest extends Checkpoints {
       }
 
       const message = pass ? 'You passed the general parking test!' : 'You failed the parking test!'
-      this.state.player.call('driving-test-message', [message]);
+      mp.events.call('driving-test-message', message);
 
       this.createExit();
       colshape.exit();
@@ -80,15 +80,15 @@ class ParkingTest extends Checkpoints {
     }
 
     colshape.exit = () => {
-      this.state.player.call('remove-driving-test-text-on-screen');
+      mp.events.call('remove-driving-test-text-on-screen');
     }
   }
   createExit = () => {
     const colshapeLocation = [-882.7581787109375,-2257.839111328125,6.215065956115723]
     const ghostCarLocation = [-858.5167236328125,-2258.404541015625,6.52133846282959];
-    this.createCheckpoint(this.state.player);
+    this.createCheckpoint();
     this.makeGhostCarSpawn(colshapeLocation, ghostCarLocation, 45, 30.0);
   }
 }
 
-module.exports = ParkingTest;
+exports = ParkingTest;

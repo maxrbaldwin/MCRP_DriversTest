@@ -1,7 +1,6 @@
 class TestState {
-  constructor(car, player) {
+  constructor(car) {
     this.car = car;
-    this.player = player;
   }
   strikes = [];
   addStrike = () => {
@@ -25,4 +24,4 @@ class TestState {
   }
 }
 
-module.exports = TestState;
+exports = TestState;

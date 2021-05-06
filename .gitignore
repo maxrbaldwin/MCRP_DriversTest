@@ -8,5 +8,5 @@ BugTrap-x64.dll
 ragemp-server.exe
 node_modules
 **/notes.txt
-client_packages/.listcache
+**.listcache
 
