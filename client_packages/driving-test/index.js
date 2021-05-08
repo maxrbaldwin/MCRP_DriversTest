@@ -17,10 +17,12 @@ mp.keys.bind(0x59, true, () => {
   mp.events.callRemote('keypress:y');
 });
 
+// messages
 mp.events.add('driving-test-message', message => {
   mp.gui.chat.push(message);
 });
 
+// messages
 mp.events.add('driving-test-text-on-screen', text => {
   function renderInteractionInstruction() {
     mp.game.graphics.drawText(text, [0.5, 0.8], { 
@@ -37,9 +39,16 @@ mp.events.add('driving-test-text-on-screen', text => {
   })
 });
 
+// remove
 mp.events.add('start-ghost-car', (ghostCar, speed) => {
   ghostCar.setForwardSpeed(speed || 20.0);
   mp.gui.chat.push(speed);
+});
+
+// player car event
+mp.events.add("playerEnterVehicle", vehicle => {
+  if (vehicle.onEnterCar) vehicle.onEnterCar();
+  vehicle.onEnterCar = () => true;
 });
 
 // handle colshapes
@@ -53,6 +62,7 @@ mp.events.add('playerEnterColshape',  shape => {
   if (shape.execute) shape.execute(player);
 });
 
+// exit colshape
 mp.events.add('playerExitColshape', shape => {
   const player = mp.players.local;
   
@@ -64,13 +74,14 @@ mp.events.add('playerExitColshape', shape => {
   if (shape.exit) shape.exit();
 });
 
+// checkpoints
 mp.events.add("playerEnterCheckpoint", checkpoint => {
   checkpoint.onPlayerEnteredCheckPoint(checkpoint);
   checkpoint.destroy();
 });
 
+// start test
 mp.events.add('start-driving-test', () => {
-  const player = mp.players.local;
   const carOpts = {
     numberPlate: "TESTDRVR",
     heading: -50,
@@ -79,39 +90,48 @@ mp.events.add('start-driving-test', () => {
   const testCarSpawn = new mp.Vector3(-889.7205200195312,-2041.5238037109375,8.805951118469238);
   const car = mp.vehicles.new(mp.game.joaat("dilettante"), testCarSpawn, carOpts);
   
-  // player.car = car;
-  
   car.class = 'player-vehicle';
   
-  car.onEnterCar = function kTurnTestMessage(player) {
+  car.onEnterCar = function kTurnTestMessage() {
     const message = 'Perform a proper k-turn. Any damage to the car will result in a strike';
-    player.call('driving-test-message', [message]);
+    mp.events.call('driving-test-message', message);
   }
 
-  const State = new TestState(car, player);
-  mp.events.call('make-kturn-test', State)
+  const State = new TestState(car);
+  mp.events.call('make-kturn-test', State);
 });
 
+// scene 1
+mp.events.add('make-kturn-test', state => {
+  const message = "Welcome to the driver's test. Please follow the instructions. Failing any of the tests will result in a strike toward your final grade. Three strikes and you fail the test. Any damage to the car will also result in a strike."
+  mp.events.call('driving-test-message', message);
+});
+
+// scene 2
 mp.events.add('make-kturn-test', state => {
   const scene = new KTurnTestScene(state);
   scene.make();
 });
 
+// scene 3
 mp.events.add('make-kturn-to-parking-path', state => {
   const scene = new KTurnToParkingPath(state);
   scene.make();
 });
 
+// scene 4
 mp.events.add('make-parking-test', state => {
   const scene = new ParkingTest(state);
   scene.make();
 });
 
+// scene 5
 mp.events.add('make-pparking-test', state => {
   const scene = new PParkingTest(state);
   scene.make();
 })
 
+// scene 6
 mp.events.add('make-path-to-end', state => {
   const scene = new ToEndPath(state);
   scene.make();

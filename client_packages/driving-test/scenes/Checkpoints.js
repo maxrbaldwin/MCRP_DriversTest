@@ -44,7 +44,7 @@ class Checkpoints {
     colshape.execute = function spawnGhostCar() {
       const carOpts = {
         numberPlate: "DNTSTLME",
-        heading: heading,
+        heading: heading,nnn
       };
       const [xx, yy, zz] = carCoordinates
       const ghostCarSpawn = new mp.Vector3(xx, yy, zz);

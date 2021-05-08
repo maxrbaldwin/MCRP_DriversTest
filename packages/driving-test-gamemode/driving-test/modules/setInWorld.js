@@ -1,11 +1,12 @@
-//const TestState = require("../scenes/TestState");
-
+// need?
 const driversTestMarkerId = 'drivers-test-marker';
 const driversTestMarkerColTubeId = 'drivers-test-col-tube';
 const carId = 'player-vehicle';
 
+// need?
 const idVariable = 'class';
 
+// setMarkerInWorld
 function setTestInWorld(player) {
   // Drivers test marker
   const driversTestStartMarkerLocation = new mp.Vector3(-914.9954833984375,-2038.460693359375,9.404977798461914);
@@ -24,7 +25,7 @@ function setTestInWorld(player) {
   driverTestColTube.interaction = function startTest(player) {    
     unsetTestInWorld(player);
 
-    mp.events.call('start-driving-test');
+    player.call('start-driving-test');
   };
 }
 

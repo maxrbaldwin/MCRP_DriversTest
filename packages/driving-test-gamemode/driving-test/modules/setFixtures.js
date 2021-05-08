@@ -1,4 +1,5 @@
 const getRandomCarType = require('./getRandomCarType');
+// remove
 
 // fixtures - random cars in the world that driving testees might run into
 function setFixtures() {
