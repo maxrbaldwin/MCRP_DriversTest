@@ -1,4 +1,11 @@
 const Checkpoints = require('./driving-test/scenes/Checkpoints.js');
+const getCone = require('./driving-test/modules/getCone.js');
+const {
+  pParkingInstructions,
+  parkingInteractionInstructions,
+  pParkingPassedMessage,
+  pParkingFailedMessage,
+} = require('./driving-test/modules/messages.js');
 
 class PParkingTest extends Checkpoints {
   constructor(state) {
@@ -21,18 +28,12 @@ class PParkingTest extends Checkpoints {
       }
     },
     pParkingInstructions: {
-      vector: new mp.Vector3(-803.5951538085938,-2387.331787109375,14.076581954956055),
+      vector: () => {
+        const [x, y, z] = this.state.dynamicTest.pParkingTest.instructionsCheckpoint;
+        return new mp.Vector3(x, y, z);
+      },
       onPlayerEnteredCheckPoint: () => {
         this.giveInstructions();
-      }
-    },
-    pParkLeavingCheckpoint: {
-      vector: new mp.Vector3(-794.2955932617188,-2393.616455078125,14.077728271484375),
-      onPlayerEnteredCheckPoint: () => {
-        const colshapeSpawn = [-782.499267578125,-2361.3349609375,14.07564640045166];
-        const ghostCarSpawn = [-729.42822265625,-2385.628662109375,14.225735664367676];
-        this.createCheckpoint();
-        this.makeGhostCarSpawn(colshapeSpawn, ghostCarSpawn, 45, 50.0);
       }
     },
     pParkingExit: {
@@ -47,26 +48,19 @@ class PParkingTest extends Checkpoints {
     this.createCheckpoint();
   }
   end = () => {
+    this.cones.forEach(({ cone }) => cone.destroy());
     mp.events.call('make-path-to-end', this.state);
   }
   makeTest = () => {
-    const carOpts = {
-      numberPlate: "DNTSTLME",
-      heading: 240,
-    };
+    const [x, y, z] = this.state.dynamicTest.pParkingTest.colShapeLocation;
+    const colShapeLocation = new mp.Vector3(x, y, z);
+    const colshape = mp.colshapes.newTube(colShapeLocation.x, colShapeLocation.y, colShapeLocation.z, 3.0, 3.0);
 
-    const carOneSpawn = new mp.Vector3(-797.1158447265625,-2399.919921875,14.076704025268555);
-    this.carOne = mp.vehicles.new(mp.game.joaat('emperor2'), carOneSpawn, carOpts);
-    
-    const carTwoSpawn = new mp.Vector3(-786.9547729492188,-2405.78271484375,14.076220512390137);
-    this.carTwo = mp.vehicles.new(mp.game.joaat('emperor2'), carTwoSpawn, carOpts);
-
-    const colShapeLocation = new mp.Vector3(-791.9942626953125,-2402.876708984375,14.076385498046875);
-    const colshape = mp.colshapes.newTube(colShapeLocation.x, colShapeLocation.y, colShapeLocation.z, 5.0, 5.0);
+    this.makeCones();
 
     colshape.interaction = () => {
       const rotation = this.state.car.getHeading();
-      const threshold = rotation < -100 && rotation > -144
+      const threshold = rotation < 260 && rotation > 220
       let pass = true;
 
       if (!threshold) {
@@ -74,7 +68,7 @@ class PParkingTest extends Checkpoints {
         pass = false;
       }
 
-      const message = pass ? 'You passed the parallel parking test!' : 'You failed the parallel parking test!'
+      const message = pass ? pParkingPassedMessage : pParkingFailedMessage;
       mp.events.call('driving-test-message', message);
 
       this.createExit();
@@ -83,17 +77,18 @@ class PParkingTest extends Checkpoints {
     }
 
     colshape.execute = () => {
-      const text = "Flex your Y muscle when you think you are parked correctly"
-      mp.events.call('driving-test-text-on-screen', text);
+      mp.events.call('driving-test-text-on-screen', parkingInteractionInstructions);
     }
 
     colshape.exit = () => {
       mp.events.call('remove-driving-test-text-on-screen');
     }
   }
+  makeCones = () => {
+    this.cones = this.state.dynamicTest.pParkingTest.conesLocations.map(coneLocation => getCone(coneLocation));
+  }
   giveInstructions = () => {
-    const message = "Parallel park between the two parks. Try to park as straight as possible"
-    mp.events.call('driving-test-message', message);
+    mp.events.call('driving-test-message', pParkingInstructions);
   }
   createExit = () => {
     this.createCheckpoint();

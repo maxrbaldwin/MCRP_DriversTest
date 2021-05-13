@@ -22,12 +22,11 @@ class KTurnToParkingPath extends Checkpoints {
   }
   checkpointsArray = this.makeArray(this.checkpoints);
   make = () => {
-    const colshapeLocation = [-944.1925659179688,-2132.5068359375,8.71610164642334];
-    const ghostCarLocation = [-910.6793212890625,-2198.818115234375,6.123366355895996];
+    this.setSpeedTrap([-939.2273559570312,-2127.76513671875,9.294723510742188], [-958.2398681640625,-2151.51171875,8.921868324279785]);
     this.createCheckpoint();
-    this.makeGhostCarSpawn(colshapeLocation, ghostCarLocation, 45, 40.0);
   }
   end = () => {
+    this.removeSpeedTrap();
     mp.events.call('make-parking-test', this.state);
   }
 }

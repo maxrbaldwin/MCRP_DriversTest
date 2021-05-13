@@ -1,4 +1,6 @@
 const Checkpoints = require('./driving-test/scenes/Checkpoints.js');
+const getCone = require('./driving-test/modules/getCone.js');
+const { kturnPassedMessage, kturnFailedMessage } = require('./driving-test/modules/messages.js');
 
 class KTurnTestScene extends Checkpoints {
   constructor(state) {
@@ -22,7 +24,7 @@ class KTurnTestScene extends Checkpoints {
     const car = this.state.car;
 
     const rotation = car.getHeading();
-    const threshold = rotation < -40 || rotation > 130;
+    const threshold = rotation < 310 && rotation > 130;
     let pass = true;
 
     if (!threshold) {
@@ -30,7 +32,7 @@ class KTurnTestScene extends Checkpoints {
       pass = false;
     }
 
-    const message = pass ? 'You passed the K-turn test!' : 'You failed the K-Turn test!'
+    const message = pass ? kturnPassedMessage : kturnFailedMessage;
     mp.events.call('driving-test-message', message);
     mp.events.call('make-kturn-to-parking-path', this.state);
   }
